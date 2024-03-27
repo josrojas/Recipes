@@ -1,7 +1,57 @@
+import json
 
+class Ingredient:
+    def __init__(self, name, quantity):
+        self.name = name
+        self.quantity = quantity
+
+class Recipe:
+    def __init__(self, name, ingredients):
+        self.name = name
+        self.ingredients = ingredients
+
+    def add_ingredient(self, ingredient):
+        self.ingredients.append(ingredient)
+
+    def display_recipe(self):
+        print(f"Recipe: {self.name}")
+        print("Ingredients:")
+        for ingredient in self.ingredients:
+            print(f"- {ingredient.name}: {ingredient.quantity}")
+
+    def edit_recipe(self):
+        new_name = input("Enter the new name for the recipe: ")
+        self.name = new_name
+
+    def edit_ingredient(self, ingredient_name):
+        for ingredient in self.ingredients:
+            if ingredient.name == ingredient_name:
+                new_name = input("Enter the new name for the ingredient: ")
+                new_quantity = input("Enter the new quantity for the ingredient: ")
+                ingredient.name = new_name
+                ingredient.quantity = new_quantity
+                print("Ingredient edited successfully!")
+                return
+        print("Ingredient not found!")
+
+    def to_dict(self):
+        return {"name": self.name, "ingredients": [{"name": i.name, "quantity": i.quantity} for i in self.ingredients]}
+
+def save_recipes(recipes):
+    with open('data.json', 'w') as f:
+        json.dump([r.to_dict() for r in recipes], f)
+
+def load_recipes():
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+        return [Recipe(d['name'], [Ingredient(i['name'], i['quantity']) for i in d['ingredients']]) for d in data]
+    except FileNotFoundError:
+        return []
 
 def main():
-  
+    recipes = load_recipes() # Load recipes from file
+
     while True:
         print("1. Add recipe")
         print("2. Add ingredient to recipe")
